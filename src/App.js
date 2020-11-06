@@ -1,22 +1,31 @@
-import React from "react";
+import React, { Suspense } from "react";
 import MainPage from "./Components/MainPage/index";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  withRouter,
+} from "react-router-dom";
+
+const ResultPage = React.lazy(() => import("./Components/ResultPage/index"));
 
 const App = () => {
   return (
     <>
-      <Router>
-        <Switch>
-          <Route path='/' exact>
-            <MainPage />
-          </Route>
-          <Route path='/photos' exact>
-            <h1>Eloeloelo</h1>
-          </Route>
-        </Switch>
-      </Router>
+      <Suspense fallback={<h1>Loading...</h1>}>
+        <Router>
+          <Switch>
+            <Route path='/' exact>
+              <MainPage />
+            </Route>
+            <Route path='/photos' exact>
+              <ResultPage />
+            </Route>
+          </Switch>
+        </Router>
+      </Suspense>
     </>
   );
 };
 
-export default App;
+export default withRouter(App);

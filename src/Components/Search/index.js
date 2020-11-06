@@ -1,12 +1,18 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import styled, { css } from "styled-components";
 import { useForm } from "react-hook-form";
 import SearchIcon from "@material-ui/icons/Search";
-import IconButton from "@material-ui/core/IconButton";
 import DataListComponent from "../DataList/index.js";
-import { Redirect } from "react-router-dom";
-
-const API_KEY = "3NtYGmPa4VJ9HPnh6KHgNqcmzfajuIw5ZgjviIPt5Cg";
+import { useHistory } from "react-router-dom";
+import {
+  setPhotos,
+  setQueryParam,
+  setShouldShowDataList,
+  selectShouldShowDataList,
+  selectQueryParam
+} from "../../PhotosReducer/photosSlice";
+import { API_KEY } from "../../constants";
 
 const Wrapper = styled.div`
   display: flex;
@@ -25,6 +31,16 @@ const Form = styled.form`
   border-radius: 4px;
   padding: 7px 0;
   position: relative;
+
+  ${(props) =>
+    props.isResultPage &&
+    css`
+      width: 70%;
+      margin: 0 auto;
+      background-color: rgba(0, 0, 0, 0.1);
+      color: rgba(0, 0, 0, 0.9);
+      border-radius: 25px;
+    `}
 
   .submitLabel {
     padding: 0px 7px;
@@ -51,6 +67,12 @@ const Input = styled.input`
   height: 100%;
   font-size: 0.8em;
 
+  ${(props) =>
+    props.isResultPage &&
+    css`
+      background-color: transparent;
+    `}
+
   @media (min-width: 960px) {
     font-size: 1em;
   }
@@ -76,12 +98,16 @@ const removeDuplicatesFromArray = (array) => {
   return arr;
 };
 
-const Search = () => {
-  const { register, handleSubmit, watch, errors } = useForm();
+const Search = React.memo(({ isResultPage }) => {
+  const { register, handleSubmit, reset } = useForm();
   const [inputValue, setInputValue] = useState("");
   const [dataList, setDataList] = useState([]);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
-  const [fetchedPhotos, setFetchedPhotos] = useState([]);
+  const [defaultInputValue,setDefaultInputValue] = useState('')
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const shouldShowDataList = useSelector(selectShouldShowDataList)
+  const queryParam = useSelector(selectQueryParam);
+
 
   const handleDataList = async () => {
     try {
@@ -90,9 +116,9 @@ const Search = () => {
       );
       const response = await request.json();
       const resultsArray = response.results;
-      let collection = [];
-      collection = removeDuplicatesFromArray(resultsArray);
-      setDataList(collection);
+      let collectionOfCategories = [];
+      collectionOfCategories = removeDuplicatesFromArray(resultsArray);
+      setDataList(collectionOfCategories);
     } catch (err) {
       console.log(err);
     }
@@ -100,17 +126,18 @@ const Search = () => {
 
   const handleSearch = async (data, event) => {
     event.preventDefault();
+
     try {
       const request = await fetch(
         `https://api.unsplash.com/search/photos?query=${inputValue}&per_page=30&client_id=${API_KEY}`
       );
       const response = await request.json();
-      console.log(response.results);
-      setFetchedPhotos(response.results);
-      setShouldRedirect(true);
+      dispatch(setPhotos(response.results));
+      dispatch(setShouldShowDataList(false));
+      dispatch(setQueryParam(inputValue));
+      history.push("/photos");
     } catch (err) {
       console.log(err);
-      setShouldRedirect(false);
     }
   };
 
@@ -121,18 +148,24 @@ const Search = () => {
   useEffect(() => {
     const timeoutHandler = setTimeout(() => {
       if (inputValue.length > 2) {
+        dispatch(setShouldShowDataList(true));
         handleDataList();
       } else {
         return;
       }
     }, 500);
-
     return () => clearTimeout(timeoutHandler);
   }, [inputValue]);
+  
+
+  useEffect(() =>{
+    setDefaultInputValue(queryParam);
+    dispatch(setShouldShowDataList(false))
+  },[queryParam])
 
   return (
     <Wrapper>
-      <Form onSubmit={handleSubmit(handleSearch)}>
+      <Form onSubmit={handleSubmit(handleSearch)} isResultPage={isResultPage}>
         <label className='submitLabel'>
           <Button type='submit' id='submit'>
             <SearchIcon />
@@ -148,13 +181,19 @@ const Search = () => {
             ref={register}
             required
             autoComplete='off'
+            defaultValue={defaultInputValue}
+            isResultPage={isResultPage}
+            id="photos-datalist"
           />
         </InputLabel>
-        {inputValue.length > 2 && <DataListComponent list={dataList} />}
-        {shouldRedirect && <Redirect push to='/photos' />}
+        {inputValue.length > 2 && shouldShowDataList ? (
+          <DataListComponent
+            list={dataList}
+          />
+        ) : null}
       </Form>
     </Wrapper>
   );
-};
+});
 
 export default Search;

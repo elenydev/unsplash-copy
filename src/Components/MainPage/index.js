@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Search from "../Search/index";
 
-const API_KEY = "3NtYGmPa4VJ9HPnh6KHgNqcmzfajuIw5ZgjviIPt5Cg";
 
 const Wrapper = styled.div`
   display: flex;
@@ -10,7 +9,6 @@ const Wrapper = styled.div`
   align-items: center;
   justify-content: center;
   background: black;
-  /* background: url("${(props) => props.background}") no-repeat center; */
   background-size: cover;
   min-height: 100vh;
   width: 100%;
@@ -106,6 +104,6 @@ const Hero = () => {
       </Container>
     </Wrapper>
   );
-};
+};;
 
 export default Hero;
