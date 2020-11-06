@@ -100,9 +100,9 @@ const removeDuplicatesFromArray = (array) => {
 
 const Search = React.memo(({ isResultPage }) => {
   const { register, handleSubmit, reset } = useForm();
-  const [inputValue, setInputValue] = useState("");
+  const [defaultInputValue, setDefaultInputValue] = useState("");
+  const [inputValue, setInputValue] = useState(defaultInputValue || "");
   const [dataList, setDataList] = useState([]);
-  const [defaultInputValue,setDefaultInputValue] = useState('')
   const history = useHistory();
   const dispatch = useDispatch();
   const shouldShowDataList = useSelector(selectShouldShowDataList)
@@ -183,13 +183,11 @@ const Search = React.memo(({ isResultPage }) => {
             autoComplete='off'
             defaultValue={defaultInputValue}
             isResultPage={isResultPage}
-            id="photos-datalist"
+            id='photos-datalist'
           />
         </InputLabel>
         {inputValue.length > 2 && shouldShowDataList ? (
-          <DataListComponent
-            list={dataList}
-          />
+          <DataListComponent list={dataList} />
         ) : null}
       </Form>
     </Wrapper>

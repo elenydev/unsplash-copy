@@ -8,6 +8,7 @@ import {
   setQueryParam,
   setShouldShowDataList,
 } from "../../PhotosReducer/photosSlice";
+import Masonry from "react-masonry-css";
 import { API_KEY } from "../../constants";
 
 const Wrapper = styled.div`
@@ -26,12 +27,17 @@ const Wrapper = styled.div`
 `;
 
 const PhotosWrapper = styled.div`
-  column-count: 1;
-  column-gap: 0.6em;
-  overflow: hidden;
 
-  @media (min-width: 960px) {
-    column-count: 3;
+  width: 95%;
+
+  .my-masonry-grid {
+    display: flex;
+    margin-left: -30px;
+    width: auto;
+  }
+  .my-masonry-grid_column {
+    padding-left: 30px;
+    background-clip: padding-box;
   }
 `;
 
@@ -140,27 +146,37 @@ const ResultPage = () => {
         ))} */}
       </AllTagsContainer>
       <PhotosWrapper>
-        {photos.length > 1 && queryParam !== ""
-          ? photos.map((photo, index) => {
-              return (
-                <PhotoBox key={index}>
-                  <img src={photo.urls.regular} />
-                  <TagsBox>
-                    {photo.tags.map((tag, index) => {
-                      return (
-                        <Tag
-                          key={index}
-                          onClick={(event) => handleSearch(tag.title, event)}
-                        >
-                          {tag.title}
-                        </Tag>
-                      );
-                    })}
-                  </TagsBox>
-                </PhotoBox>
-              );
-            })
-          : null}
+        <Masonry
+          breakpointCols={{
+            default: 3,
+            900: 2,
+            500: 1,
+          }}
+          className='my-masonry-grid'
+          columnClassName='my-masonry-grid_column'
+        >
+          {photos.length > 1 && queryParam !== ""
+            ? photos.map((photo, index) => {
+                return (
+                  <PhotoBox key={index}>
+                    <img src={photo.urls.regular} />
+                    <TagsBox>
+                      {photo.tags.map((tag, index) => {
+                        return (
+                          <Tag
+                            key={index}
+                            onClick={(event) => handleSearch(tag.title, event)}
+                          >
+                            {tag.title}
+                          </Tag>
+                        );
+                      })}
+                    </TagsBox>
+                  </PhotoBox>
+                );
+              })
+            : []}
+        </Masonry>
       </PhotosWrapper>
     </Wrapper>
   );
