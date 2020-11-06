@@ -27,8 +27,13 @@ const Wrapper = styled.div`
 `;
 
 const PhotosWrapper = styled.div`
-
   width: 95%;
+  display: flex;
+  flex-direction: column-reverse;
+
+  @media (min-width: 960px) {
+    width: 80%;
+  }
 
   .my-masonry-grid {
     display: flex;
@@ -53,11 +58,15 @@ const PhotoBox = styled.div`
 
 const Header = styled.h1`
   display: flex;
-  width: 100%;
   font-weight: 800;
-  margin-left: 25px;
   text-transform: Capitalize;
   margin-bottom: 10px;
+
+  width: 95%;
+
+  @media (min-width: 960px) {
+    width: 80%;
+  }
 `;
 
 const TagsBox = styled.div`
@@ -72,8 +81,9 @@ const Tag = styled.p`
   padding: 6px;
   text-align: center;
   font-size: 0.8em;
-  background-color: rgba(0, 0, 0, 0.05);
   font-weight: 400;
+  border: 1px solid #d1d1d1;
+  color: rgba(0, 0, 0, 0.7);
   margin: 7px;
   text-transform: capitalize;
   cursor: pointer;
@@ -82,7 +92,7 @@ const Tag = styled.p`
 const AllTagsContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   width: 100%;
   padding: 10px;
@@ -90,29 +100,37 @@ const AllTagsContainer = styled.div`
 
 const AllTagsItem = styled.p`
   text-align: center;
-  border-color: #d1d1d1;
   text-transform: capitalize;
   transition: border-color 0.1s ease-in-out;
+  padding: 4px;
+  width: fit-content;
+  font-size: 0.75em;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 2px;
+  color: rgba(0, 0, 0, 0.7);
+  border: 1px solid #d1d1d1;
+  @media (min-width: 960px) {
+    padding: 7px;
+    font-size: 0.85em;
+    width: 120px;
+    margin: 5px;
+  }
 `;
 
 const removeDuplicatesFromArray = (array) => {
-  const arr = [];
-  array.map((el) => {
-    if (arr.includes(el.title)) {
-      return;
-    } else {
-      arr.push(el.title);
-    }
-  });
+  const uniqueItemsArray = [...new Set(array)];
 
-  return arr;
+  return uniqueItemsArray;
 };
 
-const ResultPage = () => {
+const ResultPage = React.memo((props) => {
   const fetchedPhotos = useSelector(selectPhotos);
   const queryParam = useSelector(selectQueryParam);
   const [photos, setPhotos] = useState(fetchedPhotos);
   const dispatch = useDispatch();
+
+  let tagsArray = [];
 
   const handleSearch = async (tagTitle, event) => {
     event.preventDefault();
@@ -135,16 +153,11 @@ const ResultPage = () => {
   return (
     <Wrapper>
       <Search isResultPage={true} />
-      {photos.length > 0 && queryParam != "" ? (
+      {photos.length > 0 && queryParam !== "" ? (
         <Header>{queryParam}</Header>
       ) : (
         <Header>Please provide a collection name</Header>
       )}
-      <AllTagsContainer>
-        {/* {tags.map((tag) => (
-          <AllTagsItem>{tag}</AllTagsItem>
-        ))} */}
-      </AllTagsContainer>
       <PhotosWrapper>
         <Masonry
           breakpointCols={{
@@ -162,6 +175,7 @@ const ResultPage = () => {
                     <img src={photo.urls.regular} />
                     <TagsBox>
                       {photo.tags.map((tag, index) => {
+                        tagsArray.push(tag.title);
                         return (
                           <Tag
                             key={index}
@@ -177,9 +191,19 @@ const ResultPage = () => {
               })
             : []}
         </Masonry>
+        <AllTagsContainer>
+          {removeDuplicatesFromArray(tagsArray).map((tag, index) => (
+            <AllTagsItem
+              key={index}
+              onClick={(event) => handleSearch(tag, event)}
+            >
+              {tag}
+            </AllTagsItem>
+          ))}
+        </AllTagsContainer>
       </PhotosWrapper>
     </Wrapper>
   );
-};
+});
 
 export default ResultPage;

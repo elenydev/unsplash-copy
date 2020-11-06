@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import Search from "../Search/index";
 
+import { API_KEY } from "../../constants";
 
 const Wrapper = styled.div`
   display: flex;
@@ -63,22 +64,22 @@ const Paragraph = styled.p`
 const Hero = () => {
   const [background, setBackground] = useState("");
 
-  // const fetchBackgroundImage = async () => {
-  //   try {
-  //     const request = await fetch(
-  //       `https://api.unsplash.com/photos/random?count=1&client_id=${API_KEY}`
-  //     );
-  //     const response = await request.json();
-  //     console.log(response);
-  //     setBackground(response[0].urls.regular);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
+  const fetchBackgroundImage = async () => {
+    try {
+      const request = await fetch(
+        `https://api.unsplash.com/photos/random?count=1&client_id=${API_KEY}`
+      );
+      const response = await request.json();
+      console.log(response);
+      setBackground(response[0].urls.regular);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   useEffect(() => {
-    // fetchBackgroundImage();
-  });
+    fetchBackgroundImage();
+  }, []);
 
   return (
     <Wrapper background={background}>

@@ -10,7 +10,7 @@ import {
   setQueryParam,
   setShouldShowDataList,
   selectShouldShowDataList,
-  selectQueryParam
+  selectQueryParam,
 } from "../../PhotosReducer/photosSlice";
 import { API_KEY } from "../../constants";
 
@@ -99,15 +99,14 @@ const removeDuplicatesFromArray = (array) => {
 };
 
 const Search = React.memo(({ isResultPage }) => {
-  const { register, handleSubmit, reset } = useForm();
-  const [defaultInputValue, setDefaultInputValue] = useState("");
-  const [inputValue, setInputValue] = useState(defaultInputValue || "");
+  const { register, handleSubmit } = useForm();
+  const shouldShowDataList = useSelector(selectShouldShowDataList);
+  const queryParam = useSelector(selectQueryParam);
+  const [defaultInputValue, setDefaultInputValue] = useState(queryParam);
+  const [inputValue, setInputValue] = useState("");
   const [dataList, setDataList] = useState([]);
   const history = useHistory();
   const dispatch = useDispatch();
-  const shouldShowDataList = useSelector(selectShouldShowDataList)
-  const queryParam = useSelector(selectQueryParam);
-
 
   const handleDataList = async () => {
     try {
@@ -148,6 +147,7 @@ const Search = React.memo(({ isResultPage }) => {
   useEffect(() => {
     const timeoutHandler = setTimeout(() => {
       if (inputValue.length > 2) {
+        setDefaultInputValue("");
         dispatch(setShouldShowDataList(true));
         handleDataList();
       } else {
@@ -156,12 +156,11 @@ const Search = React.memo(({ isResultPage }) => {
     }, 500);
     return () => clearTimeout(timeoutHandler);
   }, [inputValue]);
-  
 
-  useEffect(() =>{
+  useEffect(() => {
     setDefaultInputValue(queryParam);
-    dispatch(setShouldShowDataList(false))
-  },[queryParam])
+    dispatch(setShouldShowDataList(false));
+  }, [queryParam]);
 
   return (
     <Wrapper>
@@ -181,6 +180,7 @@ const Search = React.memo(({ isResultPage }) => {
             ref={register}
             required
             autoComplete='off'
+            value={defaultInputValue !== "" ? defaultInputValue : inputValue}
             defaultValue={defaultInputValue}
             isResultPage={isResultPage}
             id='photos-datalist'
