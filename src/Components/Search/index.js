@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
 import { useForm } from "react-hook-form";
@@ -107,6 +107,14 @@ const Search = React.memo(({ isResultPage }) => {
   const [dataList, setDataList] = useState([]);
   const history = useHistory();
   const dispatch = useDispatch();
+  const searchRef = useRef();
+
+  const handleClickOutsideOfDataList = (e) => {
+    if (searchRef.current && !searchRef.current.contains(e.target)) {
+      dispatch(setShouldShowDataList(false));
+    }
+    return;
+  };
 
   const handleDataList = async () => {
     try {
@@ -162,6 +170,14 @@ const Search = React.memo(({ isResultPage }) => {
     dispatch(setShouldShowDataList(false));
   }, [queryParam]);
 
+  useEffect(() => {
+    document.addEventListener("click", handleClickOutsideOfDataList, true);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutsideOfDataList, true);
+    };
+  }, []);
+
   return (
     <Wrapper>
       <Form onSubmit={handleSubmit(handleSearch)} isResultPage={isResultPage}>
@@ -181,13 +197,14 @@ const Search = React.memo(({ isResultPage }) => {
             required
             autoComplete='off'
             value={defaultInputValue !== "" ? defaultInputValue : inputValue}
-            defaultValue={defaultInputValue}
             isResultPage={isResultPage}
             id='photos-datalist'
           />
         </InputLabel>
         {inputValue.length > 2 && shouldShowDataList ? (
-          <DataListComponent list={dataList} />
+          <div ref={searchRef}>
+            <DataListComponent list={dataList} />
+          </div>
         ) : null}
       </Form>
     </Wrapper>

@@ -10,6 +10,10 @@ import {
 } from "../../PhotosReducer/photosSlice";
 import Masonry from "react-masonry-css";
 import { API_KEY } from "../../constants";
+import Modal from "react-modal";
+import ModalComponent from "../ModalComponent/index";
+
+Modal.setAppElement("body");
 
 const Wrapper = styled.div`
   display: flex;
@@ -53,6 +57,7 @@ const PhotoBox = styled.div`
     display: inline-block;
     margin: 0 0 0.3em;
     width: 100%;
+    cursor: pointer;
   }
 `;
 
@@ -91,8 +96,8 @@ const Tag = styled.p`
 
 const AllTagsContainer = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: cener;
+  justify-content: flex-start;
   flex-wrap: wrap;
   width: 100%;
   padding: 10px;
@@ -102,7 +107,7 @@ const AllTagsItem = styled.p`
   text-align: center;
   text-transform: capitalize;
   transition: border-color 0.1s ease-in-out;
-  padding: 4px;
+  padding: 5px;
   width: fit-content;
   font-size: 0.75em;
   border-radius: 4px;
@@ -111,26 +116,33 @@ const AllTagsItem = styled.p`
   color: rgba(0, 0, 0, 0.7);
   border: 1px solid #d1d1d1;
   @media (min-width: 960px) {
-    padding: 7px;
+    padding: 10px;
     font-size: 0.85em;
-    width: 120px;
     margin: 5px;
   }
 `;
 
 const removeDuplicatesFromArray = (array) => {
   const uniqueItemsArray = [...new Set(array)];
-
   return uniqueItemsArray;
 };
 
 const ResultPage = React.memo((props) => {
   const fetchedPhotos = useSelector(selectPhotos);
   const queryParam = useSelector(selectQueryParam);
+  const [modalIsOpen, setIsOpen] = useState(false);
   const [photos, setPhotos] = useState(fetchedPhotos);
+  const [modalPhoto, setModalPhoto] = useState("");
   const dispatch = useDispatch();
-
   let tagsArray = [];
+
+  const openModal = () => {
+    setIsOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsOpen(false);
+  };
 
   const handleSearch = async (tagTitle, event) => {
     event.preventDefault();
@@ -171,8 +183,12 @@ const ResultPage = React.memo((props) => {
           {photos.length > 1 && queryParam !== ""
             ? photos.map((photo, index) => {
                 return (
-                  <PhotoBox key={index}>
-                    <img src={photo.urls.regular} />
+                  <PhotoBox key={index} onClick={openModal}>
+                    <img
+                      src={photo.urls.regular}
+                      onClick={() => setModalPhoto(photo)}
+                      alt={photo.alt_description}
+                    />
                     <TagsBox>
                       {photo.tags.map((tag, index) => {
                         tagsArray.push(tag.title);
@@ -202,6 +218,9 @@ const ResultPage = React.memo((props) => {
           ))}
         </AllTagsContainer>
       </PhotosWrapper>
+      <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>
+        <ModalComponent photo={modalPhoto} />
+      </Modal>
     </Wrapper>
   );
 });

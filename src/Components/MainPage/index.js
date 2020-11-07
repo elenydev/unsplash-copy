@@ -9,7 +9,7 @@ const Wrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: black;
+  background: ${({ background }) => `url('${background}') no-repeat center`};
   background-size: cover;
   min-height: 100vh;
   width: 100%;
@@ -70,7 +70,6 @@ const Hero = () => {
         `https://api.unsplash.com/photos/random?count=1&client_id=${API_KEY}`
       );
       const response = await request.json();
-      console.log(response);
       setBackground(response[0].urls.regular);
     } catch (err) {
       console.log(err);
@@ -79,7 +78,7 @@ const Hero = () => {
 
   useEffect(() => {
     fetchBackgroundImage();
-  }, []);
+  }, [background]);
 
   return (
     <Wrapper background={background}>
