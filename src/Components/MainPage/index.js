@@ -62,7 +62,7 @@ const Paragraph = styled.p`
 `;
 
 const Hero = () => {
-  const [background, setBackground] = useState("");
+  const [background, setBackground] = useState(null);
 
   const fetchBackgroundImage = async () => {
     try {
@@ -81,30 +81,35 @@ const Hero = () => {
   }, [background]);
 
   return (
-    <Wrapper background={background}>
-      <Container>
-        <Heading>Unsplash</Heading>
+    <>
+      {background && (
+        <Wrapper background={background}>
+          <Container>
+            <Heading>Unsplash</Heading>
 
-        <Paragraph>
-          The internet's source of{" "}
-          <a
-            href='https://unsplash.com/license'
-            target='_blank'
-            rel='noreferrer'
-          >
-            frelly-usable images
-          </a>
-        </Paragraph>
+            <Paragraph>
+              The internet's source of{" "}
+              <a
+                href='https://unsplash.com/license'
+                target='_blank'
+                rel='noreferrer'
+              >
+                frelly-usable images
+              </a>
+            </Paragraph>
 
-        <Paragraph>Powered by creators everywhere.</Paragraph>
-        
-        <Search />
+            <Paragraph>Powered by creators everywhere.</Paragraph>
 
-        <Paragraph>
-          Trending: <span>flower, wallpapers, backgrounds, happy, love</span>
-        </Paragraph>
-      </Container>
-    </Wrapper>
+            <Search />
+
+            <Paragraph>
+              Trending:{" "}
+              <span>flower, wallpapers, backgrounds, happy, love</span>
+            </Paragraph>
+          </Container>
+        </Wrapper>
+      )}
+    </>
   );
 };;
 
