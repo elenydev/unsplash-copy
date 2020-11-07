@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled, { css } from "styled-components";
-import { useForm } from "react-hook-form";
 import SearchIcon from "@material-ui/icons/Search";
 import DataListComponent from "../DataList/index.js";
 import { useHistory } from "react-router-dom";
@@ -99,7 +98,6 @@ const removeDuplicatesFromArray = (array) => {
 };
 
 const Search = React.memo(({ isResultPage }) => {
-  const { register, handleSubmit } = useForm();
   const shouldShowDataList = useSelector(selectShouldShowDataList);
   const queryParam = useSelector(selectQueryParam);
   const [defaultInputValue, setDefaultInputValue] = useState(queryParam);
@@ -131,7 +129,7 @@ const Search = React.memo(({ isResultPage }) => {
     }
   };
 
-  const handleSearch = async (data, event) => {
+  const handleSearch = async (event) => {
     event.preventDefault();
 
     try {
@@ -162,7 +160,9 @@ const Search = React.memo(({ isResultPage }) => {
         return;
       }
     }, 500);
-    return () => clearTimeout(timeoutHandler);
+    return (
+      () => clearTimeout(timeoutHandler), dispatch(setShouldShowDataList(false))
+    );
   }, [inputValue]);
 
   useEffect(() => {
@@ -172,7 +172,6 @@ const Search = React.memo(({ isResultPage }) => {
 
   useEffect(() => {
     document.addEventListener("click", handleClickOutsideOfDataList, true);
-
     return () => {
       document.removeEventListener("click", handleClickOutsideOfDataList, true);
     };
@@ -180,7 +179,7 @@ const Search = React.memo(({ isResultPage }) => {
 
   return (
     <Wrapper>
-      <Form onSubmit={handleSubmit(handleSearch)} isResultPage={isResultPage}>
+      <Form onSubmit={handleSearch} isResultPage={isResultPage}>
         <label className='submitLabel'>
           <Button type='submit' id='submit'>
             <SearchIcon />
@@ -193,7 +192,6 @@ const Search = React.memo(({ isResultPage }) => {
             placeholder='Search free high-resolution photos'
             name='photoName'
             onChange={handleInputValue}
-            ref={register}
             required
             autoComplete='off'
             value={defaultInputValue !== "" ? defaultInputValue : inputValue}
@@ -201,6 +199,7 @@ const Search = React.memo(({ isResultPage }) => {
             id='photos-datalist'
           />
         </InputLabel>
+
         {inputValue.length > 2 && shouldShowDataList ? (
           <div ref={searchRef}>
             <DataListComponent list={dataList} />

@@ -12,6 +12,7 @@ const Wrapper = styled.div`
   @media (min-width: 960px) {
     width: 90%;
   }
+
 `;
 
 const AuthorBox = styled.div`
@@ -48,6 +49,7 @@ const AuthorName = styled.p`
 
 const ImagePlace = styled.p`
   font-weight: 400;
+  font-size: 0.9em;
 `;
 
 const ImageBox = styled.div`
@@ -87,6 +89,7 @@ const ModalComponent = ({ photo }) => {
         <AuthorImage>
           <img src={user.profile_image.small} alt={user.name} />
         </AuthorImage>
+
         <ImageDescriptionBox>
           <AuthorName>{user.name}</AuthorName>
           <ImagePlace>
@@ -94,6 +97,7 @@ const ModalComponent = ({ photo }) => {
           </ImagePlace>
         </ImageDescriptionBox>
       </AuthorBox>
+      
       <ImageBox>
         <img src={urls.small} alt={user.name} />
       </ImageBox>

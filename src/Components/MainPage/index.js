@@ -97,7 +97,9 @@ const Hero = () => {
         </Paragraph>
 
         <Paragraph>Powered by creators everywhere.</Paragraph>
+        
         <Search />
+
         <Paragraph>
           Trending: <span>flower, wallpapers, backgrounds, happy, love</span>
         </Paragraph>

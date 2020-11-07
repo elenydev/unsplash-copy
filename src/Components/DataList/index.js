@@ -1,13 +1,13 @@
 import React from "react";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
-
 import { useDispatch } from "react-redux";
 import {
   setPhotos,
   setQueryParam,
   setShouldShowDataList,
 } from "../../PhotosReducer/photosSlice";
+
 import { API_KEY } from "../../constants";
 
 const Wrapper = styled.div`

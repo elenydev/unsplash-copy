@@ -11,9 +11,24 @@ import {
 import Masonry from "react-masonry-css";
 import { API_KEY } from "../../constants";
 import Modal from "react-modal";
-import ModalComponent from "../ModalComponent/index";
+import HighlightOffIcon from "@material-ui/icons/HighlightOff";
+import { IconButton } from "@material-ui/core";
+
+const ModalComponent = React.lazy(() => import("../ModalComponent/index"));
 
 Modal.setAppElement("body");
+
+const customStyles = {
+  content: {
+    height: "fit-content",
+  },
+};
+
+const closeButtonStyle = {
+  position: "absolute",
+  right: "5px",
+  top: "5px",
+};
 
 const Wrapper = styled.div`
   display: flex;
@@ -127,7 +142,7 @@ const removeDuplicatesFromArray = (array) => {
   return uniqueItemsArray;
 };
 
-const ResultPage = React.memo((props) => {
+const ResultPage = () => {
   const fetchedPhotos = useSelector(selectPhotos);
   const queryParam = useSelector(selectQueryParam);
   const [modalIsOpen, setIsOpen] = useState(false);
@@ -165,6 +180,7 @@ const ResultPage = React.memo((props) => {
   return (
     <Wrapper>
       <Search isResultPage={true} />
+
       {photos.length > 0 && queryParam !== "" ? (
         <Header>{queryParam}</Header>
       ) : (
@@ -191,13 +207,14 @@ const ResultPage = React.memo((props) => {
                     />
                     <TagsBox>
                       {photo.tags.map((tag, index) => {
-                        tagsArray.push(tag.title);
+                        const { title } = tag;
+                        tagsArray.push(title);
                         return (
                           <Tag
                             key={index}
-                            onClick={(event) => handleSearch(tag.title, event)}
+                            onClick={(event) => handleSearch(title, event)}
                           >
-                            {tag.title}
+                            {title}
                           </Tag>
                         );
                       })}
@@ -207,6 +224,7 @@ const ResultPage = React.memo((props) => {
               })
             : []}
         </Masonry>
+
         <AllTagsContainer>
           {removeDuplicatesFromArray(tagsArray).map((tag, index) => (
             <AllTagsItem
@@ -218,11 +236,19 @@ const ResultPage = React.memo((props) => {
           ))}
         </AllTagsContainer>
       </PhotosWrapper>
-      <Modal isOpen={modalIsOpen} onRequestClose={closeModal}>
+
+      <Modal
+        isOpen={modalIsOpen}
+        onRequestClose={closeModal}
+        style={customStyles}
+      >
+        <IconButton onClick={closeModal} style={closeButtonStyle}>
+          <HighlightOffIcon />
+        </IconButton>
         <ModalComponent photo={modalPhoto} />
       </Modal>
     </Wrapper>
   );
-});
+};
 
 export default ResultPage;
