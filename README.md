@@ -1,4 +1,21 @@
-# Getting Started with Create React App
+### LIVE https://unsplash-copy.web.app/
+
+## Setup
+
+To run this project locally , install it locally using npm:
+
+- clone/download repository
+- npm install
+- you have to provide your own api key from unsplash in 'constants.js' file with API_KEY="YOUR_APi_KEY"
+- npm start
+- check the app in [http://localhost:3000]
+
+## Used technologies:
+
+- React
+- React Redux(toolkit)
+- Styled Components
+- Material UI
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
